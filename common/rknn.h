@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <vector>
-#include "rockchip/rknn_api.h"
+#include "rknn_api.h"
 
 class rknn {
 private:

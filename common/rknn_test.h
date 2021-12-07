@@ -11,7 +11,7 @@
 #include <iostream>
 #include <sys/time.h>
 #include <mutex>
-#include "rockchip/rknn_api.h"
+#include "rknn_api.h"
 #include "rknn.h"
 
 #include "rknn_thread.h"

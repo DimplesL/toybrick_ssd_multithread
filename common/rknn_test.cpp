@@ -42,8 +42,8 @@ int rknn_test::get_img(void *ctx, cv::Mat & origin, cv::Mat & resize)
 {
 	class rknn_test *test_ctx = (class rknn_test *) ctx;
 
-	test_ctx->cap >> origin;
-	if (origin.empty() || !origin.data)
+	test_ctx->cap >> origin;  // 获取到的image原始数据
+	if (origin.empty() || !origin.data)  // 判断是否resize
 		return -1;
 
 	if (origin.cols != test_ctx->img_width

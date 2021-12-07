@@ -312,24 +312,19 @@ int main(void)
 
 	class rknn_test test(WIN_NAME);
 
-	/* 加载模型 */
 	ret = test.load_model(model_path);
 	if (ret < 0) {
 		printf("load_model error!!!\n");
 		return ret;
 	}
 
-	/* 设置输入图像的属性 */
 	ret = test.set_input_info(INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNEL);
 	if (ret < 0) {
 		printf("set_input_info error!!!\n");
 		return ret;
 	}
 
-	/* 开始运行，支持摄像头和视频文件方式 */
-	/* 使用摄像头时，VIDEO_NODE可以设置为0，表示从video 0节点获取图像数据 */
-	/* 使用视频时，VIDEO_NODE可以设置为文件路径，如"xxx.mp4"，表示从视频文件获取图像数据 */
-	/* post_process为自定义的后处理函数，RKNN相关操作已封装，只需完成后处理即可 */
+
 	ret = test.run(VIDEO_NODE, post_process, &data);
 
 	return ret;

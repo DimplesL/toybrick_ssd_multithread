@@ -20,7 +20,7 @@ void *rknn_opencv::get_img_task(void *data)
 		cv::Mat tmp_origin;
 		cv::Mat tmp_resize;
 
-		ret = (*pd->get_img_func) (pd->user_ctx_ptr,
+		ret = (*pd->get_img_func) (pd->user_ctx_ptr,  // 此处调用get_img，把图放进预先设计的内存中
 					   tmp_origin, tmp_resize);
 		if (ret < 0) {
 			printf("get_img_func error[%d], stop demo...\n", ret);
@@ -29,11 +29,11 @@ void *rknn_opencv::get_img_task(void *data)
 
 		std::unique_lock < std::mutex > lock(pd->mtx_idle);
 
-		if (pd->idle_queue.empty()) {
+		if (pd->idle_queue.empty()) {  // idle是空的，则尚未处理完缓存图像。
 			continue;
 		}
 
-		auto img = pd->idle_queue.front();
+		auto img = pd->idle_queue.front();  //idle不空了则取其第一个改变其内存存储的内容，更新为新图片
 		pd->idle_queue.pop();
 		lock.unlock();
 
@@ -65,8 +65,8 @@ void *rknn_opencv::detect_img_task(void *data)
 			continue;
 		}
 
-		auto img = pd->input_queue.front();
-		pd->input_queue.pop();
+		auto img = pd->input_queue.front();  //img指向输入队列最前的图像内容
+		pd->input_queue.pop();  //删除队列中最老那个，已经被img获取了
 		lock.unlock();
 
 		ret = (*pd->detect_img_func) (pd->user_ctx_ptr,
@@ -79,7 +79,7 @@ void *rknn_opencv::detect_img_task(void *data)
 		}
 
 		pd->mtx_output.lock();
-		pd->output_queue.push(img);
+		pd->output_queue.push(img);  // 与之前基本类似，把处理好的img存给output令其postprocess
 		pd->cond_output_not_empty.notify_all();
 		pd->mtx_output.unlock();
 	}
@@ -151,7 +151,7 @@ int rknn_opencv::update_show(void)
 		}
 	}
 
-	auto img = output_queue.front();
+	auto img = output_queue.front();  // 与之前类似，取出处理完的第一张图，用来后处理
 	output_queue.pop();
 	lock.unlock();
 
@@ -166,11 +166,11 @@ int rknn_opencv::update_show(void)
 	}
 
 	ret =
-	    (*show_img_func) (user_ctx_ptr, *(img->img_origin), fps,
+	    (*show_img_func) (user_ctx_ptr, *(img->img_origin), fps,  // 后处理直接到这里看即可，show之前有后处理逻辑
 			      &img->out_data);
 
 	mtx_idle.lock();
-	idle_queue.push(img);
+	idle_queue.push(img);  // 处理完的给空闲queue，表示可以继续给新图
 	mtx_idle.unlock();
 
 	return ret;

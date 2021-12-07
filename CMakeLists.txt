@@ -10,6 +10,11 @@ set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+set(RKNN_API_PATH ${CMAKE_SOURCE_DIR}/librknn_api)
+include_directories(${RKNN_API_PATH}/include)
+set(RKNN_API_LIB ${RKNN_API_PATH}/${LIB_ARCH}/librknn_api.so)
+
+
 find_package(OpenCV REQUIRED)
 
 if(${OpenCV_VERSION_MAJOR} MATCHES 2)
@@ -23,7 +28,7 @@ set(link_libs	opencv_core
 		opencv_highgui
 		opencv_imgproc
 		${LIB_OPENCV_VIDEO}
-		rknn_api
+		${RKNN_API_LIB}
 		pthread
 )
 
